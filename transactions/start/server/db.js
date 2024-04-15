@@ -196,7 +196,7 @@ const getItemInfoForUser = async function (itemId, userId) {
  * @param {SimpleTransaction} transactionObj
  */
 const addNewTransaction = async function (transactionObj) {
-  /*
+  
   try {
     console.log(`Getting ready to insert ${JSON.stringify(transactionObj)}`);
     const result = await db.run(
@@ -216,6 +216,7 @@ const addNewTransaction = async function (transactionObj) {
       transactionObj.currencyCode
     );
 
+    //USER CAN ADD THEIR OWN CATEGORY FOR TRANSACTIONS *CREATIVE
     if (transactionObj.pendingTransactionId != null) {
       // This might be a good time to copy over any user-created values from
       // that other transaction to this one.
@@ -231,7 +232,7 @@ const addNewTransaction = async function (transactionObj) {
     }
   }
 
-  */
+  
 };
 
 /**
@@ -241,7 +242,7 @@ const addNewTransaction = async function (transactionObj) {
  * @param {SimpleTransaction} transactionObj
  */
 const modifyExistingTransaction = async function (transactionObj) {
-  /*
+  
   try {
     const result = await db.run(
       `UPDATE transactions 
@@ -264,7 +265,7 @@ const modifyExistingTransaction = async function (transactionObj) {
       `Looks like I'm encountering an error. ${JSON.stringify(error)}`
     );
   }
-  */
+   
 };
 
 /**
@@ -273,7 +274,7 @@ const modifyExistingTransaction = async function (transactionObj) {
  * @param {string} transactionId
  */
 const markTransactionAsRemoved = async function (transactionId) {
-  /*
+  
     try {
     const updatedId = transactionId + "-REMOVED-" + crypto.randomUUID();
     const result = await db.run(
@@ -287,7 +288,7 @@ const markTransactionAsRemoved = async function (transactionId) {
       `Looks like I'm encountering an error. ${JSON.stringify(error)}`
     );
   }
-  */
+  
 };
 
 /**
@@ -296,7 +297,7 @@ const markTransactionAsRemoved = async function (transactionId) {
  * @param {string} transactionId
  */
 const deleteExistingTransaction = async function (transactionId) {
-  /*
+  
     try {
     const result = await db.run(
       `DELETE FROM transactions WHERE id = ?`,
@@ -308,7 +309,7 @@ const deleteExistingTransaction = async function (transactionId) {
       `Looks like I'm encountering an error. ${JSON.stringify(error)}`
     );
   }
-  */
+  
 };
 
 /**
@@ -318,7 +319,7 @@ const deleteExistingTransaction = async function (transactionId) {
  * @param {number} maxNum
  */
 const getTransactionsForUser = async function (userId, maxNum) {
-  /*
+
   const results = await db.all(
     `SELECT transactions.*,
       accounts.name as account_name,
@@ -334,7 +335,7 @@ const getTransactionsForUser = async function (userId, maxNum) {
     maxNum
   );
   return results;
-  */
+
 };
 
 /**
@@ -344,7 +345,6 @@ const getTransactionsForUser = async function (userId, maxNum) {
  * @param {string} itemId
  */
 const saveCursorForItem = async function (transactionCursor, itemId) {
-  /*
   try {
     await db.run(
       `UPDATE items SET transaction_cursor = ? WHERE id = ?`,
@@ -356,7 +356,6 @@ const saveCursorForItem = async function (transactionCursor, itemId) {
       `It's a big problem that I can't save my cursor. ${JSON.stringify(error)}`
     );
   }
-  */
 };
 
 module.exports = {

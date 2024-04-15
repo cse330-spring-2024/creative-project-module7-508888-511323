@@ -49,7 +49,6 @@ export const refreshConnectedBanks = async () => {
 };
 
 const showTransactionData = (txnData) => {
-  /*
   const tableRows = txnData.map((txnObj) => {
     return `<tr>
     <td>${txnObj.date}</td>
@@ -61,7 +60,6 @@ const showTransactionData = (txnData) => {
   });
   // WARNING: Not really safe without some proper sanitization
   document.querySelector("#transactionTable").innerHTML = tableRows.join("\n");
-  */
 };
 
 const connectToBank = async () => { 
@@ -72,17 +70,13 @@ const connectToBank = async () => {
 
 export const clientRefresh = async () => {
   // Fetch my transactions from the database
-  /*
   const txnData = await callMyServer("/server/transactions/list?maxCount=50");
   showTransactionData(txnData);
-  */
 };
 
 const serverRefresh = async () => {
   // Tell my server to fetch new transactions
-  /*
   await callMyServer("/server/transactions/sync", true);
-  */
 };
 
 const generateWebhook = async () => {
