@@ -338,6 +338,48 @@ const getTransactionsForUser = async function (userId, maxNum) {
 
 };
 
+const getFilteredTransactionsForUser = async function (userId, maxNum, filters) {
+  let query = `SELECT transactions.*, accounts.name as account_name, items.bank_name as bank_name
+               FROM transactions
+               JOIN accounts ON transactions.account_id = accounts.id
+               JOIN items ON accounts.item_id = items.id
+               WHERE transactions.user_id = ? and is_removed = 0`;
+  let queryParams = [userId];
+
+  if (filters.startDate) {
+    query += " AND date >= ?";
+    queryParams.push(filters.startDate);
+  }
+  if (filters.endDate) {
+    query += " AND date <= ?";
+    queryParams.push(filters.endDate);
+  }
+  if (filters.category) {
+    query += " AND t.category LIKE ?";
+    queryParams.push(`%${filters.category}%`);
+  }
+  if (filters.minAmount) {
+    query += " AND t.amount >= ?";
+    queryParams.push(filters.minAmount);
+  }
+  if (filters.maxAmount) {
+    query += " AND t.amount <= ?";
+    queryParams.push(filters.maxAmount);
+  }
+
+  query += " ORDER BY date DESC LIMIT ?";
+  queryParams.push(maxNum);
+
+  try {
+    const results = await db.all(query, queryParams);
+    return results;
+  } catch (error) {
+    console.error("Error fetching filtered transactions:", error);
+    throw error;
+  }
+};
+
+
 /**
  * Save our cursor to the database
  *
@@ -380,4 +422,5 @@ module.exports = {
   markTransactionAsRemoved,
   getTransactionsForUser,
   saveCursorForItem,
+  getFilteredTransactionsForUser,  // Add this to export your new function
 };

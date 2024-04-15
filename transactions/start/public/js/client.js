@@ -97,6 +97,32 @@ const deactivateBank = async () => {
   */
 };
 
+const applyFilters = async () => {
+  const startDate = document.getElementById('startDate').value;
+  const endDate = document.getElementById('endDate').value;
+  const category = document.getElementById('category').value;
+  const minAmount = document.getElementById('minAmount').value;
+  const maxAmount = document.getElementById('maxAmount').value;
+
+  const response = await fetch(`/transactions/list?startDate=${startDate}&endDate=${endDate}&category=${category}&minAmount=${minAmount}&maxAmount=${maxAmount}`);
+  const transactions = await response.json();
+
+  const tbody = document.getElementById('transactionTable');
+  tbody.innerHTML = ''; // Clear current transactions
+  transactions.forEach(txn => {
+    const row = tbody.insertRow();
+    row.insertCell(0).textContent = txn.date;
+    row.insertCell(1).textContent = txn.name;
+    row.insertCell(2).textContent = txn.category;
+    row.insertCell(3).textContent = txn.amount;
+    row.insertCell(4).textContent = txn.account_name;
+  });
+}
+// async function applyFilters() {
+  
+// }
+
+
 // Connect selectors to functions
 const selectorsAndFunctions = {
   "#createAccount": createNewUser,
@@ -107,6 +133,7 @@ const selectorsAndFunctions = {
   "#clientRefresh": clientRefresh,
   "#generateWebhook": generateWebhook,
   "#deactivateBank": deactivateBank,
+  "#applyFilters": applyFilters,
 };
 
 Object.entries(selectorsAndFunctions).forEach(([sel, fun]) => {

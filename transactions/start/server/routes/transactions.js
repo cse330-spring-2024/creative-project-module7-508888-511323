@@ -144,11 +144,27 @@ const syncTransactions = async function (itemId) {
  * fetched these items using the syncTransactions call above
  *
  */
+// router.get("/list", async (req, res, next) => {
+//   try {
+//     const userId = getLoggedInUserId(req);
+//     const maxCount = req.params.maxCount ?? 50;
+//     const transactions = await db.getTransactionsForUser(userId, maxCount);
+//     res.json(transactions);
+//   } catch (error) {
+//     console.log(`Running into an error!`);
+//     next(error);
+//   }
+// });
+
 router.get("/list", async (req, res, next) => {
   try {
     const userId = getLoggedInUserId(req);
-    const maxCount = req.params.maxCount ?? 50;
-    const transactions = await db.getTransactionsForUser(userId, maxCount);
+    const { startDate, endDate, category, minAmount, maxAmount } = req.query;
+    const maxCount = req.query.maxCount || 50;
+    const filters = {
+      startDate, endDate, category, minAmount: parseFloat(minAmount), maxAmount: parseFloat(maxAmount)
+    };
+    const transactions = await db.getFilteredTransactionsForUser(userId, maxCount, filters);
     res.json(transactions);
   } catch (error) {
     console.log(`Running into an error!`);
