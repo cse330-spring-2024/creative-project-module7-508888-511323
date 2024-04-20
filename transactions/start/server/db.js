@@ -12,7 +12,7 @@ let db;
 const existingDatabase = fs.existsSync(databaseFile);
 
 const createUsersTableSQL =
-  "CREATE TABLE users (id TEXT PRIMARY KEY, username TEXT NOT NULL)";
+  "CREATE TABLE users (id TEXT PRIMARY KEY, username TEXT NOT NULL, password TEXT NOT NULL)";
 const createItemsTableSQL =
   "CREATE TABLE items (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, " +
   "access_token TEXT NOT NULL, transaction_cursor TEXT, bank_name TEXT, " +
@@ -110,21 +110,31 @@ const confirmItemBelongsToUser = async function (possibleItemId, userId) {
 };
 
 const deactivateItem = async function (itemId) {
-  /*
     const updateResult = await db.run(
     `UPDATE items SET access_token = 'REVOKED', is_active = 0 WHERE id = ?`,
     itemId
   );
   return updateResult;
-  */
 };
 
-const addUser = async function (userId, username) {
+const addUser = async function (userId, username, password) {
   const result = await db.run(
-    `INSERT INTO users(id, username) VALUES("${userId}", "${username}")`
+    `INSERT INTO users(id, username, password) VALUES("${userId}", "${username}", "${password}")`
   );
   return result;
 };
+
+const deleteUser = async function(userId) {
+  const result = await db.run(
+    `DELETE FROM users WHERE id = ?`, userId
+  );
+  return result;
+
+  // const stmt = `DELETE FROM users WHERE id = ?`;
+  // const result = await this.db.run(stmt, [userId]);
+  // return result;
+}
+
 
 const getUserList = async function () {
   const result = await db.all(`SELECT id, username FROM users`);
@@ -133,6 +143,11 @@ const getUserList = async function () {
 
 const getUserRecord = async function (userId) {
   const result = await db.get(`SELECT * FROM users WHERE id=?`, userId);
+  return result;
+};
+
+const getUserByUsername = async function (userId) {
+  const result = await db.get(`SELECT username FROM users WHERE id=?`, userId);
   return result;
 };
 
@@ -171,6 +186,11 @@ const addAccount = async function (accountId, itemId, acctName) {
     acctName
   );
 };
+
+//add button for delete account
+// const deleteAccount = async function (accountId) {
+//   await db.run(`DELETE FROM accounts WHERE id = ?`, accountId);
+// };
 
 const getItemInfo = async function (itemId) {
   const result = await db.get(
@@ -408,12 +428,15 @@ module.exports = {
   confirmItemBelongsToUser,
   deactivateItem,
   addUser,
+  deleteUser,
   getUserList,
   getUserRecord,
+  getUserByUsername,
   getBankNamesForUser,
   addItem,
   addBankNameForItem,
   addAccount,
+  //deleteAccount, //just added
   getItemInfo,
   getItemInfoForUser,
   addNewTransaction,

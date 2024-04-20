@@ -17,7 +17,11 @@ router.get("/list", async (req, res, next) => {
 
 router.post("/deactivate", async (req, res, next) => {
   try {
-    res.json({ todo: "Implement this method" });
+    const userId = getLoggedInUserId(req);
+    const itemId = req.body.itemId;
+    await db.deactivateItem(userId, itemId);
+    res.json({ success: true });
+    //res.json(result);
   } catch (error) {
     next(error);
   }

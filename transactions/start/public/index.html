@@ -18,13 +18,16 @@
     <div id="notSignedIn" class="d-none d-flex justify-content-evenly align-items-stretch">
       <div class="d-flex flex-column gap-2 border border-3 rounded p-3">
         <h4>Create an account!</h4>
-        <label for="#username">Account username</label><input placeholder="JoeTest" id="username" />
+        <label for="username">Account username</label><input placeholder="Enter Username" id="username" required/>
+        <label for="password">Password:</label><input type="password" id="password" name="password" required>
         <button type="button" class="btn btn-primary" id="createAccount">Create account!</button>
       </div>
       <div id="existingUsers" class="d-flex flex-column gap-2  border border-3 rounded p-3">
         <h4>Sign in!</h4>
         Or, sign in as one of these users:
         <select id="existingUsersSelect"></select>
+        <label for="usernameLogin">Account username</label><input placeholder="Enter Username" id="usernameLogin" required/>
+        <label for="passwordLogin">Password:</label><input type="password" id="passwordLogin" name="passwordLogin" required>
         <button type="button" class="btn btn-primary" id="signIn">Sign in!</button>
       </div>
     </div>
@@ -43,7 +46,7 @@
         <input type="text" id="category" class="form-control" placeholder="Category">
         <input type="number" id="minAmount" class="form-control" placeholder="Min Amount">
         <input type="number" id="maxAmount" class="form-control" placeholder="Max Amount">
-        <button type="button" class="btn btn-primary" onclick="applyFilters()">Apply Filters</button>
+        <button type="button" class="btn btn-primary" id="applyFilters">Apply Filters </button>
       </div>
       
       <div>
@@ -76,6 +79,7 @@
         </div>
       </div>
       <button type="button" class="btn btn-danger my-3" id="signOut">Sign out</button>
+      <button type="button" class="btn btn-danger my-3" id="deleteUser">Delete Account</button>
       <div id="output"></div>
     </div>
   </div>

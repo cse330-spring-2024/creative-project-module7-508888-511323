@@ -71,5 +71,5 @@ const handleServerError = async function (responseObject) {
 export const resetUI = function () {
   showOutput("");
   document.querySelector("#username").value = "";
-  document.querySelector("#email").value = "";
+  //document.querySelector("#email").value = "";
 };

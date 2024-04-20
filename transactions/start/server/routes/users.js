@@ -5,6 +5,8 @@ const { getLoggedInUserId } = require("../utils");
 const db = require("../db");
 
 const router = express.Router();
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 
 /**
  * Methods and endpoints for signing in, signing out, and creating new users.
@@ -14,8 +16,9 @@ const router = express.Router();
 router.post("/create", async (req, res, next) => {
   try {
     const username = escape(req.body.username);
+    const password = escape(req.body.password);
     const userId = uuidv4();
-    const result = await db.addUser(userId, username);
+    const result = await db.addUser(userId, username, password);
     console.log(`User creation result is ${JSON.stringify(result)}`);
     if (result["lastID"] != null) {
       res.cookie("signedInUser", userId, {
@@ -27,6 +30,15 @@ router.post("/create", async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+  // try {
+  //   const { username, password } = req.body;
+  //   const hashedPassword = await bcrypt.hash(password, saltRounds);
+  //   const userId = uuidv4();
+  //   const result = await db.addUser(userId, username, hashedPassword);
+  //   // handle result and respond
+  // } catch (error) {
+  //   next(error);
+  // }
 });
 
 router.get("/list", async (req, res, next) => {
@@ -39,16 +51,60 @@ router.get("/list", async (req, res, next) => {
 });
 
 router.post("/sign_in", async (req, res, next) => {
+  console.log(`I am in sign_in`);
   try {
-    const userId = escape(req.body.userId);
-    res.cookie("signedInUser", userId, {
-      maxAge: 1000 * 60 * 60 * 24 * 30,
-      httpOnly: true,
-    });
-    res.json({ signedIn: true });
+    const { userId, username, password } = req.body;
+    //const user = await db.getUserByUsername(username); // Assume this function fetches the user by username
+    if (username && await bcrypt.compare(password, username.password)) {
+      // set cookie or session
+      res.json({ signedIn: true });
+      if (result["lastID"] != null) {
+        res.cookie("signedInUser", userId, {
+          maxAge: 1000 * 60 * 60 * 24 * 30,
+          httpOnly: true,
+        });
+      }
+    } else {
+      res.status(401).json({ signedIn: false, message: "Invalid username or password" });
+    }
   } catch (error) {
     next(error);
   }
+
+  // try {
+  //   const userId = escape(req.body.userId);
+  //   const password = escape(req.body.password);
+  //   console.log(userId);
+  //   console.log(password);
+  //   if (userId && await bcrypt.compare(password, userId.password)) {
+  //         // set cookie or session
+  //         res.json({ signedIn: true });
+  //         res.cookie("signedInUser", userId, {
+  //           maxAge: 1000 * 60 * 60 * 24 * 30,
+  //           httpOnly: true,
+  //         });
+  //       } else {
+  //         res.status(401).json({ signedIn: false, message: "Invalid username or password" });
+  //       }
+  //   res.json(result);
+  // } catch (error) {
+  //   next(error);
+  // }
+
+  // try {
+  //   const userId = escape(req.body.userId);
+  //   //const username = req.body.username;
+  //   const password = req.body.password;
+  //   const user = await db.getUserByUsername(userId); // Assume this function fetches the user by username
+  //   if (user && await bcrypt.compare(password, user.password)) {
+  //     // set cookie or session
+  //     res.json({ signedIn: true });
+  //   } else {
+  //     res.status(401).json({ signedIn: false, message: "Invalid username or password" });
+  //   }
+  // } catch (error) {
+  //   next(error);
+  // }
 });
 
 router.post("/sign_out", async (req, res, next) => {
@@ -59,6 +115,23 @@ router.post("/sign_out", async (req, res, next) => {
     next(error);
   }
 });
+
+router.post("/delete", async (req, res, next) => {
+  try {
+    //const userId = req.body.userId;
+    const userId = getLoggedInUserId(req);
+    const result = await db.deleteUser(userId);
+    if (result.changes) {
+      res.clearCookie("signedInUser");  // Clear session cookie
+      res.json({ deleted: true, message: "User deleted successfully" });
+    } else {
+      res.json({ deleted: false, message: "User not found" });
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 /**
  * Get the id and username of our currently logged in user, if any.
@@ -76,7 +149,7 @@ router.get("/get_my_info", async (req, res, next) => {
         res.json({ userInfo: null });
         return;
       } else {
-        result = { id: userObject.id, username: userObject.username };
+        result = { id: userObject.id, username: userObject.username, password: userObject.password};
       }
     } else {
       result = null;

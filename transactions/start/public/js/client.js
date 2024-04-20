@@ -88,16 +88,16 @@ const generateWebhook = async () => {
 
 const deactivateBank = async () => {
   // Tell my server to remove a bank from my list of active banks
-  /*
   const itemId = document.querySelector("#deactivateBankSelect").value;
   if (itemId != null && itemId !== "") {
     await callMyServer("/server/banks/deactivate", true, { itemId: itemId });
     await refreshConnectedBanks();
   }
-  */
+  
 };
 
 const applyFilters = async () => {
+  print("applyFilter reached");
   const startDate = document.getElementById('startDate').value;
   const endDate = document.getElementById('endDate').value;
   const category = document.getElementById('category').value;
