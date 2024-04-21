@@ -97,14 +97,20 @@ const deactivateBank = async () => {
 };
 
 const applyFilters = async () => {
-  print("applyFilter reached");
+  console.log("applyFilter reached");
   const startDate = document.getElementById('startDate').value;
   const endDate = document.getElementById('endDate').value;
   const category = document.getElementById('category').value;
   const minAmount = document.getElementById('minAmount').value;
   const maxAmount = document.getElementById('maxAmount').value;
+  console.log("min amount: " + minAmount);
 
-  const response = await fetch(`/transactions/list?startDate=${startDate}&endDate=${endDate}&category=${category}&minAmount=${minAmount}&maxAmount=${maxAmount}`);
+  //working method:
+  // const txnData = await callMyServer("/server/transactions/list?startDate=${startDate}&endDate=${endDate}&category=${category}&minAmount=${minAmount}&maxAmount=${maxAmount}");
+  // showTransactionData(txnData);
+
+
+  const response = await fetch(`/server/transactions/list?startDate=${startDate}&endDate=${endDate}&category=${category}&minAmount=${minAmount}&maxAmount=${maxAmount}`);
   const transactions = await response.json();
 
   const tbody = document.getElementById('transactionTable');
@@ -118,10 +124,13 @@ const applyFilters = async () => {
     row.insertCell(4).textContent = txn.account_name;
   });
 }
-// async function applyFilters() {
-  
-// }
 
+
+
+//IMPLEMENT THIS
+const hideTransactions = () => {
+  document.querySelector("#transactionTable").innerHTML = "";
+};
 
 // Connect selectors to functions
 const selectorsAndFunctions = {

@@ -118,8 +118,9 @@ const deactivateItem = async function (itemId) {
 };
 
 const addUser = async function (userId, username, password) {
+  const hashedPassword = await bcrypt.hash(password, saltRounds);
   const result = await db.run(
-    `INSERT INTO users(id, username, password) VALUES("${userId}", "${username}", "${password}")`
+    `INSERT INTO users(id, username, password) VALUES("${userId}", "${username}", "${hashedPassword}")`
   );
   return result;
 };
@@ -146,8 +147,9 @@ const getUserRecord = async function (userId) {
   return result;
 };
 
-const getUserByUsername = async function (userId) {
-  const result = await db.get(`SELECT username FROM users WHERE id=?`, userId);
+const getUserByUsername = async (username) => {
+  // Code to retrieve user by username including the hashed password
+  const result = await db.get(`SELECT * FROM users WHERE username = ?`, username);
   return result;
 };
 
@@ -375,21 +377,22 @@ const getFilteredTransactionsForUser = async function (userId, maxNum, filters) 
     queryParams.push(filters.endDate);
   }
   if (filters.category) {
-    query += " AND t.category LIKE ?";
+    query += " AND category LIKE ?";
     queryParams.push(`%${filters.category}%`);
   }
   if (filters.minAmount) {
-    query += " AND t.amount >= ?";
+    query += " AND amount >= ?";
     queryParams.push(filters.minAmount);
   }
   if (filters.maxAmount) {
-    query += " AND t.amount <= ?";
+    query += " AND amount <= ?";
     queryParams.push(filters.maxAmount);
   }
 
   query += " ORDER BY date DESC LIMIT ?";
   queryParams.push(maxNum);
-
+  console.log(query);
+  console.log(queryParams);
   try {
     const results = await db.all(query, queryParams);
     return results;

@@ -53,23 +53,44 @@ router.get("/list", async (req, res, next) => {
 router.post("/sign_in", async (req, res, next) => {
   console.log(`I am in sign_in`);
   try {
-    const { userId, username, password } = req.body;
-    //const user = await db.getUserByUsername(username); // Assume this function fetches the user by username
-    if (username && await bcrypt.compare(password, username.password)) {
-      // set cookie or session
-      res.json({ signedIn: true });
-      if (result["lastID"] != null) {
-        res.cookie("signedInUser", userId, {
-          maxAge: 1000 * 60 * 60 * 24 * 30,
-          httpOnly: true,
-        });
-      }
-    } else {
-      res.status(401).json({ signedIn: false, message: "Invalid username or password" });
-    }
+    const userId = escape(req.body.userId);
+    const username = escape(req.body.username);
+    const password = escape(req.body.password);
+    res.cookie("signedInUser", userId, {
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      httpOnly: true,
+    });
+    res.json({ signedIn: true });
   } catch (error) {
-    next(error);
-  }
+      next(error);
+    }
+
+
+  
+//   try {
+//     const { username, password } = req.body;
+//     console.log("Received:", username, password);  // Debug log
+//     const user = await db.getUserByUsername(username);
+//     if (user && user.password && password) {
+//         console.log("Hashed Password:", user.password);  // Debug log
+//         console.log("Setting userID:", user.id);
+//         console.log("Retrieved userID from session:", req.session.userID);
+//         console.log("Retrieved userID from cookie:", req.cookies.userID);
+//         const match = await bcrypt.compare(password, user.password);
+//         if (match) {
+//             res.json({ signedIn: true, message: "Login successful" });
+//         } else {
+//             res.status(401).json({ signedIn: false, message: "Invalid credentials" });
+//         }
+//     } else {
+//         res.status(401).json({ signedIn: false, message: "User not found or data missing" });
+//     }
+// } catch (error) {
+//     console.error("Login Error:", error);
+//     next(error);
+// }
+
+
 
   // try {
   //   const userId = escape(req.body.userId);

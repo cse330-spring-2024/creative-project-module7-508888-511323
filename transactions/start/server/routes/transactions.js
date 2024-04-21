@@ -160,7 +160,8 @@ router.get("/list", async (req, res, next) => {
   try {
     const userId = getLoggedInUserId(req);
     const { startDate, endDate, category, minAmount, maxAmount } = req.query;
-    const maxCount = req.query.maxCount || 50;
+    console.log(`minAmount in transactions: ${minAmount}`);
+    const maxCount = req.query.maxCount ?? 50; //maybe change back to || 
     const filters = {
       startDate, endDate, category, minAmount: parseFloat(minAmount), maxAmount: parseFloat(maxAmount)
     };
