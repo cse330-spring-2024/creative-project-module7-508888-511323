@@ -40,9 +40,9 @@ export const signIn = async function () {
   // Ensure this function handles both username and password
 
   const userId = document.querySelector("#existingUsersSelect").value;
-  const username = document.querySelector("#usernameLogin").value;
+  //const username = document.querySelector("#usernameLogin").value;
   const password = document.querySelector("#passwordLogin").value;
-  await callMyServer("/server/users/sign_in", true, { userId: userId, username: username, password: password });
+  await callMyServer("/server/users/sign_in", true, { userId: userId, password: password });
   await refreshSignInStatus();
 
 

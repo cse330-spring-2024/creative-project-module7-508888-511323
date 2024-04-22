@@ -2,6 +2,8 @@ const fs = require("fs");
 const sqlite3 = require("sqlite3").verbose();
 const dbWrapper = require("sqlite");
 const crypto = require("crypto");
+const bcrypt = require("bcrypt");
+const saltRounds = 10;
 const { SimpleTransaction } = require("./simpleTransactionObject");
 
 // You may want to have this point to different databases based on your environment
@@ -12,7 +14,7 @@ let db;
 const existingDatabase = fs.existsSync(databaseFile);
 
 const createUsersTableSQL =
-  "CREATE TABLE users (id TEXT PRIMARY KEY, username TEXT NOT NULL, password TEXT NOT NULL)";
+  "CREATE TABLE users (id TEXT PRIMARY KEY, username TEXT NOT NULL, password TEXT NOT NULL, budget TEXT DEFAULT '0')";
 const createItemsTableSQL =
   "CREATE TABLE items (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, " +
   "access_token TEXT NOT NULL, transaction_cursor TEXT, bank_name TEXT, " +
@@ -119,10 +121,9 @@ const deactivateItem = async function (itemId) {
 
 //add password into params
 const addUser = async function (userId, username, password) {
-  //const hashedPassword = await bcrypt.hash(password, saltRounds); //THIS IS THE PROBLEM it was using [], try without
+  const hashedPassword = await bcrypt.hash(password, saltRounds); //THIS IS THE PROBLEM it was using [], try without
   const result = await db.run(
-    `INSERT INTO users(id, username, password) VALUES("${userId}", "${username}", "${password}")`
-   // `INSERT INTO users(id, username, password) VALUES("${userId}", "${username}")`
+    `INSERT INTO users(id, username, password) VALUES("${userId}", "${username}", "${hashedPassword}")`
   );
   return result;
 };
@@ -138,6 +139,10 @@ const deleteUser = async function(userId) {
   // return result;
 }
 
+const getPasswordByUserId = async function (userId) {
+  const result = await db.get(`SELECT password FROM users WHERE id=?`, userId);
+  return result;
+};
 
 const getUserList = async function () {
   const result = await db.all(`SELECT id, username FROM users`);
@@ -149,9 +154,9 @@ const getUserRecord = async function (userId) {
   return result;
 };
 
-const getUserByUsername = async (username) => {
+const getUserByUserID = async (userId) => {
   // Code to retrieve user by username including the hashed password
-  const result = await db.get(`SELECT * FROM users WHERE username = ?`, username);
+  const result = await db.get(`SELECT * FROM users WHERE id = ?`, userId);
   return result;
 };
 
@@ -433,10 +438,11 @@ module.exports = {
   confirmItemBelongsToUser,
   deactivateItem,
   addUser,
+  getPasswordByUserId,
   deleteUser,
   getUserList,
   getUserRecord,
-  getUserByUsername,
+  getUserByUserID,
   getBankNamesForUser,
   addItem,
   addBankNameForItem,

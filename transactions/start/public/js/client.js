@@ -96,6 +96,26 @@ const deactivateBank = async () => {
   
 };
 
+const setMonthlyBudget = async () => {
+  const budgetInput = document.getElementById('budget');
+  //convert to float
+  const budgetAmount = parseFloat(budgetInput.value);
+
+  //if input is not valid
+  if (isNaN(budgetAmount) || budgetAmount < 0) {
+    alert("Budget is invalid");
+    return; 
+  }
+
+  // Display the budget in the specified area
+  const budgetDisplay = document.getElementById('monthlyBudgetDisplay');
+  //displays text to only 2 decimal places
+  budgetDisplay.textContent = `My Monthly Budget: $${budgetAmount.toFixed(2)}`;
+
+}
+document.getElementById('setMonthlyBudget').addEventListener('click', setMonthlyBudget);
+
+
 
 const applyFilters = async () => {
   console.log("applyFilter reached");

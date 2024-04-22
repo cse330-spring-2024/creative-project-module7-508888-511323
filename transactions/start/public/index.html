@@ -26,7 +26,7 @@
         <h4>Sign in!</h4>
         Or, sign in as one of these users:
         <select id="existingUsersSelect"></select>
-        <label for="usernameLogin">Account username</label><input placeholder="Enter Username" id="usernameLogin" required/> 
+        <!-- <label for="usernameLogin">Account username</label><input placeholder="Enter Username" id="usernameLogin" required/>  -->
         <label for="passwordLogin">Password:</label><input type="password" id="passwordLogin" name="passwordLogin" required>
         <button type="button" class="btn btn-primary" id="signIn">Sign in!</button>
       </div>
@@ -38,6 +38,22 @@
         <p id="banksMsg"></p>
         <button type="button" class="btn btn-primary button-md my-2" id="connectToBank">Connect my
           bank!</button>
+      </div>
+
+      <div>
+        <p id="setMonthly"></p>
+        <h4>Set a Monthly Budget</h4>
+        <input type="number" id="budget" placeholder="$">
+        <button type="button" id="setMonthlyBudget">Enter</button>
+        <br> </br>
+      </div>
+
+      <div>
+        <div id="monthlyBudgetDisplay"></div>
+      </div>
+
+      <div>
+        <div id="monthlyBudgetProgress"></div>
       </div>
 
       <div class="filter-controls mb-3" id="apply_Filters">

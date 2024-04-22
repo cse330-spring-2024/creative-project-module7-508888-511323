@@ -53,18 +53,18 @@ router.get("/list", async (req, res, next) => {
 
 router.post("/sign_in", async (req, res, next) => {
   console.log(`I am in sign_in`);
-  try {
-    const userId = escape(req.body.userId);
-    const username = escape(req.body.username);
-    const password = escape(req.body.password);
-    res.cookie("signedInUser", userId, {
-      maxAge: 1000 * 60 * 60 * 24 * 30,
-      httpOnly: true,
-    });
-    res.json({ signedIn: true });
-  } catch (error) {
-      next(error);
-    }
+  // try {
+  //   const userId = escape(req.body.userId);
+  //   const username = escape(req.body.username);
+  //   const password = escape(req.body.password);
+  //   res.cookie("signedInUser", userId, {
+  //     maxAge: 1000 * 60 * 60 * 24 * 30,
+  //     httpOnly: true,
+  //   });
+  //   res.json({ signedIn: true });
+  // } catch (error) {
+  //     next(error);
+  //   }
 
 
   
@@ -95,10 +95,13 @@ router.post("/sign_in", async (req, res, next) => {
 
   // try {
   //   const userId = escape(req.body.userId);
+  //   const username = escape(req.body.username);
   //   const password = escape(req.body.password);
+  //   const correctPW = await db.getPasswordByUserId(userId);
   //   console.log(userId);
   //   console.log(password);
-  //   if (userId && await bcrypt.compare(password, userId.password)) {
+  //   console.log(correctPW);
+  //   if (userId && await bcrypt.compare(password, correctPW)) {
   //         // set cookie or session
   //         res.json({ signedIn: true });
   //         res.cookie("signedInUser", userId, {
@@ -113,20 +116,26 @@ router.post("/sign_in", async (req, res, next) => {
   //   next(error);
   // }
 
-  // try {
-  //   const userId = escape(req.body.userId);
-  //   //const username = req.body.username;
-  //   const password = req.body.password;
-  //   const user = await db.getUserByUsername(userId); // Assume this function fetches the user by username
-  //   if (user && await bcrypt.compare(password, user.password)) {
-  //     // set cookie or session
-  //     res.json({ signedIn: true });
-  //   } else {
-  //     res.status(401).json({ signedIn: false, message: "Invalid username or password" });
-  //   }
-  // } catch (error) {
-  //   next(error);
-  // }
+  try {
+    const userId = escape(req.body.userId);
+    //const username = req.body.username;
+    const password = req.body.password;
+    const user = await db.getUserByUserID(userId); // Assume this function fetches the user by username
+    console.log(user.username);
+    console.log(user.password);
+    if (user && await bcrypt.compare(password, user.password)) {
+      // set cookie or session
+      res.cookie("signedInUser", userId, {
+            maxAge: 1000 * 60 * 60 * 24 * 30,
+            httpOnly: true,
+      });
+      res.json({ signedIn: true });
+    } else {
+      res.status(401).json({ signedIn: false, message: "Invalid username or password" });
+    }
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.post("/sign_out", async (req, res, next) => {
