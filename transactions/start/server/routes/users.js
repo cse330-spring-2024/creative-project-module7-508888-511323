@@ -5,7 +5,7 @@ const { getLoggedInUserId } = require("../utils");
 const db = require("../db");
 
 const router = express.Router();
-//const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 /**
