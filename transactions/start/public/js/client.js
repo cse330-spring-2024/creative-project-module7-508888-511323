@@ -129,14 +129,14 @@ const applyFilters = async () => {
   const category = document.getElementById('category').value;
   const minAmount = document.getElementById('minAmount').value;
   const maxAmount = document.getElementById('maxAmount').value;
-  console.log("min amount: " + minAmount);
+  const starred = document.getElementById('starred').checked;
 
   //working method:
   // const txnData = await callMyServer("/server/transactions/list?startDate=${startDate}&endDate=${endDate}&category=${category}&minAmount=${minAmount}&maxAmount=${maxAmount}");
   // showTransactionData(txnData);
 
 
-  const response = await fetch(`/server/transactions/list?startDate=${startDate}&endDate=${endDate}&category=${category}&minAmount=${minAmount}&maxAmount=${maxAmount}`);
+  const response = await fetch(`/server/transactions/list?startDate=${startDate}&endDate=${endDate}&category=${category}&minAmount=${minAmount}&maxAmount=${maxAmount}&starred=${starred}`);
   const transactions = await response.json();
 
   const tbody = document.getElementById('transactionTable');
@@ -148,8 +148,34 @@ const applyFilters = async () => {
     row.insertCell(2).textContent = txn.category;
     row.insertCell(3).textContent = txn.amount;
     row.insertCell(4).textContent = txn.account_name;
+    const starCell = row.insertCell(5);
+        starCell.innerHTML = 
+        `<input type="checkbox" class="star-checkbox" 
+        data-id="${txn.id}" ${txn.is_starred ? 'checked' : ''}>`;
+  });
+  attachCheckboxListeners();
+
+}
+
+function attachCheckboxListeners() {
+  document.querySelectorAll('.star-checkbox').forEach(checkbox => {
+      checkbox.addEventListener('change', function() {
+          const transactionId = this.getAttribute('data-id');
+          const isStarred = this.checked;
+          updateStarStatus(transactionId, isStarred); // Update the database based on checkbox state
+      });
   });
 }
+
+const updateStarStatus = async (transactionId, isStarred) => {
+  await callMyServer("/server/transactions/update-star-status", true, {
+    transactionId: transactionId,
+    isStarred: isStarred ? 1 : 0
+  });
+}
+
+
+
 
 
 

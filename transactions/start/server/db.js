@@ -403,6 +403,14 @@ const getFilteredTransactionsForUser = async function (userId, maxNum, filters) 
     query += " AND amount <= ?";
     queryParams.push(filters.maxAmount);
   }
+  if (filters.starred) {
+    // Check if starred is specifically true before adding this condition
+    if (filters.starred === true) {
+        query += " AND is_starred = 1";
+    } else {
+        query += " AND is_starred = 0";
+    }
+  }
 
   query += " ORDER BY date DESC LIMIT ?";
   queryParams.push(maxNum);
@@ -417,6 +425,18 @@ const getFilteredTransactionsForUser = async function (userId, maxNum, filters) 
   }
 };
 
+const updateTransactionStarStatus = (transactionId, isStarred) => {
+  return new Promise((resolve, reject) => {
+      const sql = `UPDATE transactions SET is_starred = ? WHERE id = ?`;
+      db.run(sql, [isStarred, transactionId], function(err) {
+          if (err) {
+              reject(err);
+          } else {
+              resolve({ id: this.lastID, changes: this.changes });
+          }
+      });
+  });
+};
 
 /**
  * Save our cursor to the database
@@ -464,6 +484,7 @@ module.exports = {
   deleteExistingTransaction,
   markTransactionAsRemoved,
   getTransactionsForUser,
+  updateTransactionStarStatus,
   saveCursorForItem,
   getFilteredTransactionsForUser,  // Add this to export your new function
 };

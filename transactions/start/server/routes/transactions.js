@@ -159,17 +159,28 @@ const syncTransactions = async function (itemId) {
 router.get("/list", async (req, res, next) => {
   try {
     const userId = getLoggedInUserId(req);
-    const { startDate, endDate, category, minAmount, maxAmount } = req.query;
-    console.log(`minAmount in transactions: ${minAmount}`);
+    const { startDate, endDate, category, minAmount, maxAmount, starred} = req.query;
+    console.log("starred: " + req.query.starred)
     const maxCount = req.query.maxCount ?? 50; //maybe change back to || 
     const filters = {
-      startDate, endDate, category, minAmount: parseFloat(minAmount), maxAmount: parseFloat(maxAmount)
+      startDate, endDate, category, minAmount: parseFloat(minAmount), maxAmount: parseFloat(maxAmount), starred: starred === 'true',
     };
     const transactions = await db.getFilteredTransactionsForUser(userId, maxCount, filters);
     res.json(transactions);
   } catch (error) {
     console.log(`Running into an error!`);
     next(error);
+  }
+});
+
+router.post('/update-star-status', async (req, res) => {
+  const { transactionId, isStarred } = req.body;
+  try {
+      await db.updateTransactionStarStatus(transactionId, isStarred);
+      res.json({ success: true, message: 'Star status updated successfully.' });
+  } catch (error) {
+      console.error('Failed to update star status:', error);
+      res.status(500).json({ success: false, message: 'Failed to update star status.' });
   }
 });
 
