@@ -163,6 +163,16 @@ router.post("/delete", async (req, res, next) => {
   }
 });
 
+router.post("/budget", async (req, res, next) => {
+  try {
+    const budget = escape(req.body.budget);
+    const userId = uuidv4();
+    const result = await db.addBudget(userId, budget);
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
 
 /**
  * Get the id and username of our currently logged in user, if any.

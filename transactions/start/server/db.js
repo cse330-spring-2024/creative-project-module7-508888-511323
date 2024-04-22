@@ -14,7 +14,7 @@ let db;
 const existingDatabase = fs.existsSync(databaseFile);
 
 const createUsersTableSQL =
-  "CREATE TABLE users (id TEXT PRIMARY KEY, username TEXT NOT NULL, password TEXT NOT NULL, budget TEXT DEFAULT '0')";
+  "CREATE TABLE users (id TEXT PRIMARY KEY, username TEXT NOT NULL, password TEXT NOT NULL, budget INTEGER NOT_NULL DEFAULT 0)";
 const createItemsTableSQL =
   "CREATE TABLE items (id TEXT PRIMARY KEY, user_id TEXT NOT NULL, " +
   "access_token TEXT NOT NULL, transaction_cursor TEXT, bank_name TEXT, " +
@@ -28,6 +28,7 @@ const createTransactionsTableSQL =
   "account_id TEXT NOT_NULL, category TEXT, date TEXT, " +
   "authorized_date TEXT, name TEXT, amount REAL, currency_code TEXT, " +
   "is_removed INTEGER NOT_NULL DEFAULT 0, " +
+  "is_starred INTEGER NOT_NULL DEFAULT 0, " +
   "FOREIGN KEY(user_id) REFERENCES users(id), " +
   "FOREIGN KEY(account_id) REFERENCES accounts(id))";
 
@@ -195,6 +196,13 @@ const addAccount = async function (accountId, itemId, acctName) {
     acctName
   );
 };
+
+const addBudget = async function (userId, budget){
+  const result = await db.run(
+    `UPDATE users SET budget = ${budget} WHERE id = ?`, userId
+  );
+  return result;
+}
 
 //add button for delete account
 // const deleteAccount = async function (accountId) {
@@ -447,6 +455,7 @@ module.exports = {
   addItem,
   addBankNameForItem,
   addAccount,
+  addBudget,
   //deleteAccount, //just added
   getItemInfo,
   getItemInfoForUser,

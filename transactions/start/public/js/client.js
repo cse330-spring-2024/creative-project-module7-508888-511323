@@ -113,6 +113,10 @@ const setMonthlyBudget = async () => {
   //displays text to only 2 decimal places
   budgetDisplay.textContent = `My Monthly Budget: $${budgetAmount.toFixed(2)}`;
 
+  const budget = document.querySelector("#budget").value;
+  await callMyServer("/server/users/budget", true, {
+    budget: budget
+  });
 }
 document.getElementById('setMonthlyBudget').addEventListener('click', setMonthlyBudget);
 
