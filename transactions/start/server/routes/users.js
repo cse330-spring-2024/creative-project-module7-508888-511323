@@ -5,7 +5,7 @@ const { getLoggedInUserId } = require("../utils");
 const db = require("../db");
 
 const router = express.Router();
-const bcrypt = require("bcrypt");
+//const bcrypt = require("bcrypt");
 const saltRounds = 10;
 
 /**
@@ -18,6 +18,7 @@ router.post("/create", async (req, res, next) => {
     const username = escape(req.body.username);
     const password = escape(req.body.password);
     const userId = uuidv4();
+    //const result = await db.addUser(userId, username);
     const result = await db.addUser(userId, username, password);
     console.log(`User creation result is ${JSON.stringify(result)}`);
     if (result["lastID"] != null) {

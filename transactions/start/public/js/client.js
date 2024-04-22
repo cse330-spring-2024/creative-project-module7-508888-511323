@@ -96,6 +96,7 @@ const deactivateBank = async () => {
   
 };
 
+
 const applyFilters = async () => {
   console.log("applyFilter reached");
   const startDate = document.getElementById('startDate').value;

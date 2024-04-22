@@ -117,10 +117,12 @@ const deactivateItem = async function (itemId) {
   return updateResult;
 };
 
+//add password into params
 const addUser = async function (userId, username, password) {
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
+  //const hashedPassword = await bcrypt.hash(password, saltRounds); //THIS IS THE PROBLEM it was using [], try without
   const result = await db.run(
-    `INSERT INTO users(id, username, password) VALUES("${userId}", "${username}", "${hashedPassword}")`
+    `INSERT INTO users(id, username, password) VALUES("${userId}", "${username}", "${password}")`
+   // `INSERT INTO users(id, username, password) VALUES("${userId}", "${username}")`
   );
   return result;
 };

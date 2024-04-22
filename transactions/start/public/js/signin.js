@@ -63,6 +63,7 @@ export const signOut = async function () {
   resetUI();
 };
 
+
 export const deleteUser = async function () {
   const userId = document.querySelector("#existingUsersSelect").value; // assuming the user ID is selected from a dropdown or stored in a variable
   await callMyServer(`/server/users/delete`, true, { userId: userId });
