@@ -96,6 +96,7 @@ const deactivateBank = async () => {
   
 };
 
+
 const setMonthlyBudget = async () => {
   const budgetInput = document.getElementById('budget');
   //convert to float
