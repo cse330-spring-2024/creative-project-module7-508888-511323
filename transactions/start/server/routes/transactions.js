@@ -7,12 +7,6 @@ const { SimpleTransaction } = require("../simpleTransactionObject");
 
 const router = express.Router();
 
-/**
- * This will ask our server to make a transactions sync call
- * against all the items it has for a particular user. This is one way
- * you can keep your transaction data up to date, but it's preferable
- * to just fetch data for a single item in response to a webhook.
- */
 router.post("/sync", async (req, res, next) => {
   try {
     const userId = getLoggedInUserId(req);
@@ -27,7 +21,6 @@ router.post("/sync", async (req, res, next) => {
       syncTransactions(item.id);
     })
 
-    //res.json({ todo: "Implement this method" });
   } catch (error) {
     console.log(`Running into an error!`);
     next(error);
@@ -70,12 +63,6 @@ const fetchNewSyncData = async function (accessToken, initialCursor) {
   return allData;
 };
 
-/**
- * Given an item ID, this will fetch all transactions for all accounts
- * associated with this item using the sync API. We can call this manually
- * using the /sync endpoint above, or we can call this in response
- * to a webhook
- */
 const syncTransactions = async function (itemId) {
   const summary = { 
     added: 0, 
@@ -98,7 +85,6 @@ const syncTransactions = async function (itemId) {
       txnObj, 
       userId
     );
-    //console.log(`I want to add ${JSON.stringify(simpleTransaction)}`);
     const result = await db.addNewTransaction(simpleTransaction);
     if (result) {
       summary.added += result.changes;
@@ -111,7 +97,6 @@ const syncTransactions = async function (itemId) {
       txnObj, 
       userId
     );
-    //console.log(`I want to add ${JSON.stringify(simpleTransaction)}`);
     const result = await db.modifyExistingTransaction(simpleTransaction);
     if (result) {
       summary.modified += result.changes;
@@ -133,28 +118,10 @@ const syncTransactions = async function (itemId) {
 
   // 6. Save our most recent cursor
   await db.saveCursorForItem(allData.nextCursor, itemId);
-  //print all transactions info: 
-  //console.dir(results.data, {depth: null, colors: true});
+
   return summary;
 };
 
-/**
- * Fetch all the transactions for a particular user (up to a limit)
- * This is really just a simple database query, since our server has already
- * fetched these items using the syncTransactions call above
- *
- */
-// router.get("/list", async (req, res, next) => {
-//   try {
-//     const userId = getLoggedInUserId(req);
-//     const maxCount = req.params.maxCount ?? 50;
-//     const transactions = await db.getTransactionsForUser(userId, maxCount);
-//     res.json(transactions);
-//   } catch (error) {
-//     console.log(`Running into an error!`);
-//     next(error);
-//   }
-// });
 
 router.get("/list", async (req, res, next) => {
   try {

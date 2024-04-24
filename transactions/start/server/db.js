@@ -6,7 +6,6 @@ const bcrypt = require("bcrypt");
 const saltRounds = 10;
 const { SimpleTransaction } = require("./simpleTransactionObject");
 
-// You may want to have this point to different databases based on your environment
 const databaseFile = "./database/appdata.db";
 let db;
 
@@ -38,14 +37,12 @@ dbWrapper
     db = dBase;
     try {
       if (!existingDatabase) {
-        // Database doesn't exist yet -- let's create it!
         await db.run(createUsersTableSQL);
         await db.run(createItemsTableSQL);
         await db.run(createAccountsTableSQL);
         await db.run(createTransactionsTableSQL);
       } else {
         
-        // Avoids a rare bug where the database gets created, but the tables don't
         const tableNames = await db.all(
           "SELECT name FROM sqlite_master WHERE type='table'"
         );
@@ -121,9 +118,8 @@ const deactivateItem = async function (itemId) {
   return updateResult;
 };
 
-//add password into params
 const addUser = async function (userId, username, password) {
-  const hashedPassword = await bcrypt.hash(password, saltRounds); //THIS IS THE PROBLEM it was using [], try without
+  const hashedPassword = await bcrypt.hash(password, saltRounds); 
   const result = await db.run(
     `INSERT INTO users(id, username, password) VALUES("${userId}", "${username}", "${hashedPassword}")`
   );
@@ -136,9 +132,6 @@ const deleteUser = async function(userId) {
   );
   return result;
 
-  // const stmt = `DELETE FROM users WHERE id = ?`;
-  // const result = await this.db.run(stmt, [userId]);
-  // return result;
 }
 
 const getPasswordByUserId = async function (userId) {
@@ -157,7 +150,6 @@ const getUserRecord = async function (userId) {
 };
 
 const getUserByUserID = async (userId) => {
-  // Code to retrieve user by username including the hashed password
   const result = await db.get(`SELECT * FROM users WHERE id = ?`, userId);
   return result;
 };
@@ -170,27 +162,6 @@ const getBankNamesForUser = async function (userId) {
   return result;
 };
 
-const highestSpendingDisplay = async function (userId) {
-  const result = await db.all(
-    `SELECT
-        strftime('%Y-%m', date) AS month,
-        SUM(amount) AS total_spending
-      FROM
-        transactions
-      WHERE
-        date >= date('now', 'start of year') AND
-        date <= date('now') AND
-        user_id = ?
-      GROUP BY
-        month
-      ORDER BY
-        total_spending DESC
-      LIMIT 1`,
-      userId
-
-  );
-    return { month: result.month, total_spending: result.total_spending};
-}
 
 
 const addItem = async function (itemId, userId, accessToken) {
@@ -295,10 +266,6 @@ const yearSpendingSummary = async function (userId){
   }
 }
 
-//add button for delete account
-// const deleteAccount = async function (accountId) {
-//   await db.run(`DELETE FROM accounts WHERE id = ?`, accountId);
-// };
 
 const getItemInfo = async function (itemId) {
   const result = await db.get(
@@ -318,11 +285,7 @@ const getItemInfoForUser = async function (itemId, userId) {
   return result;
 };
 
-/**
- * Add a new transaction to our database
- *
- * @param {SimpleTransaction} transactionObj
- */
+
 const addNewTransaction = async function (transactionObj) {
   
   try {
@@ -344,12 +307,6 @@ const addNewTransaction = async function (transactionObj) {
       transactionObj.currencyCode
     );
 
-    //USER CAN ADD THEIR OWN CATEGORY FOR TRANSACTIONS *CREATIVE
-    if (transactionObj.pendingTransactionId != null) {
-      // This might be a good time to copy over any user-created values from
-      // that other transaction to this one.
-    }
-
     return result;
   } catch (error) {
     console.log(
@@ -363,12 +320,7 @@ const addNewTransaction = async function (transactionObj) {
   
 };
 
-/**
- *
- * Modify an existing transaction in our database
- *
- * @param {SimpleTransaction} transactionObj
- */
+
 const modifyExistingTransaction = async function (transactionObj) {
   
   try {
@@ -396,11 +348,7 @@ const modifyExistingTransaction = async function (transactionObj) {
    
 };
 
-/**
- * Mark a transaction as removed from our database
- *
- * @param {string} transactionId
- */
+
 const markTransactionAsRemoved = async function (transactionId) {
   
     try {
@@ -419,11 +367,7 @@ const markTransactionAsRemoved = async function (transactionId) {
   
 };
 
-/**
- * Actually delete a transaction from the database
- *
- * @param {string} transactionId
- */
+
 const deleteExistingTransaction = async function (transactionId) {
   
     try {
@@ -440,12 +384,7 @@ const deleteExistingTransaction = async function (transactionId) {
   
 };
 
-/**
- * Fetch transactions for our user from the database
- *
- * @param {string} userId
- * @param {number} maxNum
- */
+
 const getTransactionsForUser = async function (userId, maxNum) {
 
   const results = await db.all(
@@ -529,12 +468,7 @@ const updateTransactionStarStatus = (transactionId, isStarred) => {
   });
 };
 
-/**
- * Save our cursor to the database
- *
- * @param {string} transactionCursor
- * @param {string} itemId
- */
+
 const saveCursorForItem = async function (transactionCursor, itemId) {
   try {
     await db.run(
@@ -573,8 +507,6 @@ module.exports = {
   weekSpendingSummary,
   monthSpendingSummary,
   yearSpendingSummary,
-  highestSpendingDisplay,
-  //deleteAccount, //just added
   getItemInfo,
   getItemInfoForUser,
   addNewTransaction,
@@ -584,5 +516,5 @@ module.exports = {
   getTransactionsForUser,
   updateTransactionStarStatus,
   saveCursorForItem,
-  getFilteredTransactionsForUser,  // Add this to export your new function
+  getFilteredTransactionsForUser,
 };

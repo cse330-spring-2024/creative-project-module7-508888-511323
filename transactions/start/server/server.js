@@ -5,12 +5,6 @@ const cookieParser = require("cookie-parser");
 
 const APP_PORT = process.env.APP_PORT || 8000;
 
-/**
- * Initialization!
- */
-
-// Set up the server
-
 const app = express();
 app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -26,7 +20,6 @@ const linkTokenRouter = require("./routes/tokens");
 const bankRouter = require("./routes/banks");
 const { router: transactionsRouter } = require("./routes/transactions");
 const debugRouter = require("./routes/debug");
-const { getWebhookServer } = require("./webhookServer");
 
 app.use("/server/users", usersRouter);
 app.use("/server/tokens", linkTokenRouter);
@@ -34,9 +27,7 @@ app.use("/server/banks", bankRouter);
 app.use("/server/transactions", transactionsRouter);
 app.use("/server/debug", debugRouter);
 
-/* Add in some basic error handling so our server doesn't crash if we run into
- * an error.
- */
+
 const errorHandler = function (err, req, res, next) {
   console.error(`Your error:`);
   console.error(err);
@@ -51,5 +42,3 @@ const errorHandler = function (err, req, res, next) {
 };
 app.use(errorHandler);
 
-// Initialize our webhook server, too.
-const webhookServer = getWebhookServer();

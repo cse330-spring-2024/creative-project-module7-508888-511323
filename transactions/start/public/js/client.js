@@ -22,7 +22,6 @@ export const refreshConnectedBanks = async () => {
       bankData[0].bank_name ?? "unknown"
     }`;
   } else {
-    // The English language is weird.
     banksMsg.textContent =
       `You're connected to ` +
       bankData
@@ -39,13 +38,10 @@ export const refreshConnectedBanks = async () => {
       ? "Connect another bank!"
       : "Connect a bank!";
 
-  // Fill out our "Remove this bank" drop-down
   const bankOptions = bankData.map(
     (bank) => `<option value=${bank.id}>${bank.bank_name}</option>`
   );
-  const bankSelect = document.querySelector("#deactivateBankSelect");
-  bankSelect.innerHTML =
-    `<option>--Pick one--</option>` + bankOptions.join("\n");
+  
 };
 
 const showTransactionData = (txnData) => {
@@ -61,7 +57,6 @@ const showTransactionData = (txnData) => {
     }></td>
     </tr>`;
   });
-  // WARNING: Not really safe without some proper sanitization
   document.querySelector("#transactionTable").innerHTML = tableRows.join("\n");
 };
 
@@ -82,30 +77,13 @@ const serverRefresh = async () => {
   await callMyServer("/server/transactions/sync", true);
 };
 
-const generateWebhook = async () => {
-  // Tell my server to generate a webhook
-  /*
-  await callMyServer("/server/debug/generate_webhook", true);
-  */
-};
 
-const deactivateBank = async () => {
-  // Tell my server to remove a bank from my list of active banks
-  const itemId = document.querySelector("#deactivateBankSelect").value;
-  if (itemId != null && itemId !== "") {
-    await callMyServer("/server/banks/deactivate", true, { itemId: itemId });
-    await refreshConnectedBanks();
-  }
-  
-};
 
 
 const setMonthlyBudget = async () => {
   const budgetInput = document.getElementById('budget');
-  //convert to float
   const budgetAmount = parseFloat(budgetInput.value);
 
-  //if input is not valid
   if (isNaN(budgetAmount) || budgetAmount < 0) {
     alert("Budget is invalid");
     return; 
@@ -123,7 +101,6 @@ document.getElementById('setMonthlyBudget').addEventListener('click', setMonthly
 const getBudget = async () => {
   try{
     const response = await callMyServer("/server/users/getBudget");
-    //console.log("Response is " + response.budget);
     document.querySelector("#monthlyBudgetDisplay").textContent = `My Monthly Budget: $${parseFloat(response.budget).toFixed(2)}`;
   
   }catch (error) {
@@ -166,10 +143,7 @@ const showBudgetOptions = async () => {
   console.log("showBudgetOptions reached");
   getBudget();
   getMonthlySpending();
-  highestSpendingDisplay();
 }
-
-//document.getElementById('budgetOptionsButton').addEventListener('click', showBudgetOptions);
 
 document.getElementById('spendingSummaries').addEventListener('click', function() {
   todaySpendingSummary();
@@ -178,12 +152,6 @@ document.getElementById('spendingSummaries').addEventListener('click', function(
   yearSpendingSummary();
 });
 
-
-const highestSpendingDisplay = async () => {
-    const response = await callMyServer("/server/users/highestSpendingDisplay");
-    console.log("Response is " + response.total_spending);
-    document.querySelector("#highestSpendingDisplay").textContent = `Highest Spending Month: ${response.month} with $${parseFloat(response.total_spending).toFixed(2)}`;
-}
 
 const applyFilters = async () => {
   console.log("applyFilter reached");
@@ -194,16 +162,11 @@ const applyFilters = async () => {
   const maxAmount = document.getElementById('maxAmount').value;
   const starred = document.getElementById('starred').checked;
 
-  //working method:
-  // const txnData = await callMyServer("/server/transactions/list?startDate=${startDate}&endDate=${endDate}&category=${category}&minAmount=${minAmount}&maxAmount=${maxAmount}");
-  // showTransactionData(txnData);
-
-
   const response = await fetch(`/server/transactions/list?startDate=${startDate}&endDate=${endDate}&category=${category}&minAmount=${minAmount}&maxAmount=${maxAmount}&starred=${starred}`);
   const transactions = await response.json();
 
   const tbody = document.getElementById('transactionTable');
-  tbody.innerHTML = ''; // Clear current transactions
+  tbody.innerHTML = ''; 
   transactions.forEach(txn => {
     const row = tbody.insertRow();
     row.insertCell(0).textContent = txn.date;
@@ -225,9 +188,19 @@ function attachCheckboxListeners() {
       checkbox.addEventListener('change', function() {
           const transactionId = this.getAttribute('data-id');
           const isStarred = this.checked;
-          updateStarStatus(transactionId, isStarred); // Update the database based on checkbox state
+          updateStarStatus(transactionId, isStarred); 
       });
   });
+}
+
+const clearFilters = async () => {
+  document.getElementById('startDate').value = '';
+  document.getElementById('endDate').value = '';
+  document.getElementById('category').value = '';
+  document.getElementById('minAmount').value = '';
+  document.getElementById('maxAmount').value = '';
+  document.getElementById('starred').checked = false;
+  applyFilters();
 }
 
 const updateStarStatus = async (transactionId, isStarred) => {
@@ -237,12 +210,6 @@ const updateStarStatus = async (transactionId, isStarred) => {
   });
 }
 
-//IMPLEMENT THIS
-const hideTransactions = () => {
-  document.querySelector("#transactionTable").innerHTML = "";
-};
-
-// Connect selectors to functions
 const selectorsAndFunctions = {
   "#createAccount": createNewUser,
   "#signIn": signIn,
@@ -250,9 +217,8 @@ const selectorsAndFunctions = {
   "#connectToBank": connectToBank,
   "#serverRefresh": serverRefresh,
   "#clientRefresh": clientRefresh,
-  "#generateWebhook": generateWebhook,
-  "#deactivateBank": deactivateBank,
   "#applyFilters": applyFilters,
+  "#clearFilters": clearFilters,
   "#budgetOptionsButton": showBudgetOptions,
 };
 
@@ -263,5 +229,4 @@ Object.entries(selectorsAndFunctions).forEach(([sel, fun]) => {
     document.querySelector(sel)?.addEventListener("click", fun);
   }
 });
-await highestSpendingDisplay();
 await refreshSignInStatus();

@@ -8,13 +8,13 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
 
-  <title>Where'd My Money Go?</title>
+  <title>Finanical Tracker</title>
 </head>
 
 <body>
   <div class="container w-75 pt-5">
-    <h3>Where'd My Money Go?</h3>
-    <p>Let's see how you spent your money!</p>
+    <h3>Financial Tracker</h3>
+    <p>Look into your transactions!</p>
     <div id="notSignedIn" class="d-none d-flex justify-content-evenly align-items-stretch">
       <div class="d-flex flex-column gap-2 border border-3 rounded p-3">
         <h4>Create an account!</h4>
@@ -26,7 +26,6 @@
         <h4>Sign in!</h4>
         Or, sign in as one of these users:
         <select id="existingUsersSelect"></select>
-        <!-- <label for="usernameLogin">Account username</label><input placeholder="Enter Username" id="usernameLogin" required/>  -->
         <label for="passwordLogin">Password:</label><input type="password" id="passwordLogin" name="passwordLogin" required>
         <button type="button" class="btn btn-primary" id="signIn">Sign in!</button>
       </div>
@@ -40,9 +39,6 @@
           bank!</button>
       </div>
 
-      <div>
-        <div id="highestSpendingDisplay"></div>
-      </div>
       <div>
         <button type="button" id="budgetOptionsButton">Show Budget Options</button>
       </div>
@@ -112,17 +108,8 @@
         </table>
         <div class="w-75 border border-1 p-2 rounded-2" id="deubgCalls">
           <p>Debug calls:</p>
-          <button type="button" class="btn btn-outline-secondary button-md my-2" id="serverRefresh">Server
-            refresh</button>
-          <button type="button" class="btn btn-outline-secondary button-md my-2" id="clientRefresh">Client-side
-            refresh</button>
-          <button type="button" class="btn btn-outline-secondary button-md my-2" id="generateWebhook">Generate a
-            webhook</button>
-          <div>
-            <select id="deactivateBankSelect"></select>
-            <button type="button" class="btn btn-warning button-md my-2" id="deactivateBank">Stop using this
-              bank</button>
-          </div>
+          <button type="button" class="btn btn-outline-secondary button-md my-2" id="serverRefresh">Get Transactions from Bank</button>
+          <button type="button" class="btn btn-outline-secondary button-md my-2" id="clientRefresh">Show Transactions from Bank</button>
         </div>
       </div>
       <button type="button" class="btn btn-danger my-3" id="signOut">Sign out</button>

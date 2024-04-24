@@ -1,6 +1,3 @@
-// Want to test out modified transactions? Copy this bit of code to the end
-// of your fetchNewSyncData call
-
 allData.modified.push({
   account_id: "USE_AN_EXISTING_ACCOUNT_ID",
   account_owner: null,
@@ -48,8 +45,6 @@ allData.modified.push({
   unofficial_currency_code: null,
 });
 
-// And here's some code you can use to test removed
-// transactions
 
 allData.removed.push({
   transaction_id: "USE_AN_EXISTING_TRANSACTION_ID",
