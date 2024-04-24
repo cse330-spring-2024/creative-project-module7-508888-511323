@@ -1,2 +1,0 @@
-This directory is where our database will live. 
-(If this directory doesn't exist, the application crashes.)
