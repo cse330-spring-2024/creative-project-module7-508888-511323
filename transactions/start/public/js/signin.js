@@ -43,6 +43,7 @@ export const signIn = async function () {
   //const username = document.querySelector("#usernameLogin").value;
   const password = document.querySelector("#passwordLogin").value;
   await callMyServer("/server/users/sign_in", true, { userId: userId, password: password });
+  document.querySelector("#budgetOptions").style.display = 'none';
   await refreshSignInStatus();
 
 
@@ -91,5 +92,8 @@ export const refreshSignInStatus = async function () {
     await refreshConnectedBanks();
 
     await clientRefresh();
+    //await getBudget(); //maybe pass in user id
+    // await getMonthlySpending();
+    // await highestSpendingDisplay();
   }
 };

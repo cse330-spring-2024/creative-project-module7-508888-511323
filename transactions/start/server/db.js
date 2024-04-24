@@ -44,6 +44,7 @@ dbWrapper
         await db.run(createAccountsTableSQL);
         await db.run(createTransactionsTableSQL);
       } else {
+        
         // Avoids a rare bug where the database gets created, but the tables don't
         const tableNames = await db.all(
           "SELECT name FROM sqlite_master WHERE type='table'"
@@ -169,6 +170,29 @@ const getBankNamesForUser = async function (userId) {
   return result;
 };
 
+const highestSpendingDisplay = async function (userId) {
+  const result = await db.all(
+    `SELECT
+        strftime('%Y-%m', date) AS month,
+        SUM(amount) AS total_spending
+      FROM
+        transactions
+      WHERE
+        date >= date('now', 'start of year') AND
+        date <= date('now') AND
+        user_id = ?
+      GROUP BY
+        month
+      ORDER BY
+        total_spending DESC
+      LIMIT 1`,
+      userId
+
+  );
+    return { month: result.month, total_spending: result.total_spending};
+}
+
+
 const addItem = async function (itemId, userId, accessToken) {
   const result = await db.run(
     `INSERT INTO items(id, user_id, access_token) VALUES(?, ?, ?)`,
@@ -198,10 +222,77 @@ const addAccount = async function (accountId, itemId, acctName) {
 };
 
 const addBudget = async function (userId, budget){
-  const result = await db.run(
-    `UPDATE users SET budget = ${budget} WHERE id = ?`, userId
+  var result = await db.run(
+    `UPDATE users SET budget = ? WHERE id = ?`, 
+    [budget, userId]
   );
   return result;
+}
+
+const getBudget = async function (userId){
+  var result = await db.get(
+    `SELECT budget FROM users WHERE id=?`,
+    userId
+  );
+  return result;
+}
+
+const getMonthlySpending = async function (userId) {
+  var result = await db.get(
+    `SELECT SUM(amount) AS total_spending FROM transactions
+    WHERE date >= date('now', 'start of month') AND date <= date('now') AND amount > 0 AND user_id = ?`,
+    userId
+  );
+  if (result && result.total_spending !== null) {
+    return { total_spending: result.total_spending };
+  } else {
+    return { total_spending: 0 };
+  }
+}
+
+const todaySpendingSummary = async function (userId){
+  var today = await db.get(
+    `SELECT IFNULL(SUM(amount), 0) AS today_spending FROM transactions
+    WHERE date = date('now') AND amount > 0 AND user_id = ?`,
+    userId
+  );
+  if (today &&  today.today_spending !== null) {
+    return { today_spending: today.today_spending };
+  }
+}
+
+const weekSpendingSummary = async function (userId){
+  var week = await db.get(
+    `SELECT SUM(amount) AS week_spending FROM transactions
+    WHERE date >= date('now', 'weekday 0', '-7 days') AND date <= date('now') AND amount > 0 AND user_id = ?`,
+    userId
+  );
+  if (week && week.week_spending !== null) {
+    return { week_spending: week.week_spending };
+  }
+}
+
+const monthSpendingSummary = async function (userId){
+  var month = await db.get(
+    `SELECT SUM(amount) AS month_spending FROM transactions
+    WHERE date >= date('now', 'start of month') AND date <= date('now') AND amount > 0 AND user_id = ?`,
+    userId
+  );
+
+  if (month && month.month_spending !== null) {
+    return { month_spending: month.month_spending };
+  }
+}
+
+const yearSpendingSummary = async function (userId){
+  var year = await db.get(
+    `SELECT SUM(amount) AS year_spending FROM transactions
+    WHERE  date >= date('now', 'start of year') AND date <= date('now') AND amount > 0 AND user_id = ?`,
+    userId
+  );
+  if (year && year.year_spending !== null) {
+    return { year_spending: year.year_spending };
+  }
 }
 
 //add button for delete account
@@ -476,6 +567,13 @@ module.exports = {
   addBankNameForItem,
   addAccount,
   addBudget,
+  getBudget,
+  getMonthlySpending,
+  todaySpendingSummary,
+  weekSpendingSummary,
+  monthSpendingSummary,
+  yearSpendingSummary,
+  highestSpendingDisplay,
   //deleteAccount, //just added
   getItemInfo,
   getItemInfoForUser,

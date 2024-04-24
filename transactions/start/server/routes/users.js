@@ -166,12 +166,79 @@ router.post("/delete", async (req, res, next) => {
 router.post("/budget", async (req, res, next) => {
   try {
     const budget = escape(req.body.budget);
-    const userId = uuidv4();
+    const userId = getLoggedInUserId(req);
     const result = await db.addBudget(userId, budget);
     res.json(result);
   } catch (error) {
     next(error);
   }
+});
+
+router.get("/getBudget", async (req, res, next) => {
+  try {
+      const userId = getLoggedInUserId(req); 
+      const result = await db.getBudget(userId);
+      res.json(result);
+  } catch (error) {
+      next(error);
+  }
+});
+
+router.get("/getMonthlySpending", async (req, res, next) => {
+  try {
+      const userId = getLoggedInUserId(req); 
+      const result = await db.getMonthlySpending(userId);
+      res.json(result);
+      console.log("THIS RESULT" + result);
+  } catch (error) {
+      next(error);
+  }
+});
+
+router.get("/todaySpendingSummary", async (req, res, next) => {
+  try {
+      const userId = getLoggedInUserId(req); 
+      const result = await db.todaySpendingSummary(userId);
+      res.json(result);
+  } catch (error) {
+      next(error);
+  }
+});
+
+router.get("/weekSpendingSummary", async (req, res, next) => {
+  try {
+      const userId = getLoggedInUserId(req); 
+      const result = await db.weekSpendingSummary(userId);
+      res.json(result);
+  } catch (error) {
+      next(error);
+  }
+});
+
+router.get("/monthSpendingSummary", async (req, res, next) => {
+  try {
+      const userId = getLoggedInUserId(req); 
+      const result = await db.monthSpendingSummary(userId);
+      res.json(result);
+  } catch (error) {
+      next(error);
+  }
+});
+
+router.get("/yearSpendingSummary", async (req, res, next) => {
+  try {
+      const userId = getLoggedInUserId(req); 
+      const result = await db.yearSpendingSummary(userId);
+      res.json(result);
+  } catch (error) {
+      next(error);
+  }
+});
+
+router.get('/highestSpendingDisplay', async (req, res) => {
+    const userId = getLoggedInUserId(req);
+    const result = await db.highestSpendingDisplay(userId);
+    res.json(result);
 });
 
 /**

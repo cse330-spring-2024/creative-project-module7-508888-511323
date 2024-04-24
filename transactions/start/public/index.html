@@ -41,21 +41,45 @@
       </div>
 
       <div>
-        <p id="setMonthly"></p>
-        <h4>Set a Monthly Budget</h4>
-        <input type="number" id="budget" placeholder="$">
-        <button type="button" id="setMonthlyBudget">Enter</button>
-        <br> </br>
+        <div id="highestSpendingDisplay"></div>
       </div>
-
       <div>
-        <div id="monthlyBudgetDisplay"></div>
+        <button type="button" id="budgetOptionsButton">Show Budget Options</button>
       </div>
+      
+      <div id="budgetOptions" style="display: none">
+        <div>
+          <p id="setMonthly"></p>
+          <h4>Set a Monthly Budget</h4>
+          <input type="number" id="budget" placeholder="$">
+          <button type="button" id="setMonthlyBudget">Enter</button>
+          <br> </br>
+        </div>
 
-      <div>
-        <div id="monthlyBudgetProgress"></div>
+        <div>
+          <div id="monthlyBudgetDisplay"></div>
+        </div>
+
+        <div>
+          <div id="monthlySpendingDisplay"></div>
+        </div>
+
+        <div>
+          <button type="button" id="spendingSummaries">See My Spending Summaries</button>
+        </div>
+        <div>
+          <div id="todaySpendingSummary"></div>
+        </div>
+        <div>
+          <div id="weekSpendingSummary"></div>
+        </div>
+        <div>
+          <div id="monthSpendingSummary"></div>
+        </div>
+        <div>
+          <div id="yearSpendingSummary"></div>
+        </div>
       </div>
-
       <div class="filter-controls mb-3" id="apply_Filters">
         <input type="date" id="startDate" class="form-control" placeholder="Start Date">
         <input type="date" id="endDate" class="form-control" placeholder="End Date">

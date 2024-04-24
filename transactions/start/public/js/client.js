@@ -56,6 +56,9 @@ const showTransactionData = (txnData) => {
     <td>${txnObj.category}</td>
     <td class="text-end">${txnObj.amount}</td>
     <td>${txnObj.bank_name}<br/>${txnObj.account_name}</td>
+    <td><input type="checkbox" class="star-checkbox" data-id="${txnObj.id}" ${
+      txnObj.is_starred ? "checked" : ""
+    }></td>
     </tr>`;
   });
   // WARNING: Not really safe without some proper sanitization
@@ -108,19 +111,79 @@ const setMonthlyBudget = async () => {
     return; 
   }
 
-  // Display the budget in the specified area
-  const budgetDisplay = document.getElementById('monthlyBudgetDisplay');
-  //displays text to only 2 decimal places
-  budgetDisplay.textContent = `My Monthly Budget: $${budgetAmount.toFixed(2)}`;
-
-  const budget = document.querySelector("#budget").value;
-  await callMyServer("/server/users/budget", true, {
-    budget: budget
+  const response = await callMyServer("/server/users/budget", true, {
+    budget: budgetAmount
   });
+
+  getBudget();
+  getMonthlySpending();
 }
 document.getElementById('setMonthlyBudget').addEventListener('click', setMonthlyBudget);
 
+const getBudget = async () => {
+  try{
+    const response = await callMyServer("/server/users/getBudget");
+    //console.log("Response is " + response.budget);
+    document.querySelector("#monthlyBudgetDisplay").textContent = `My Monthly Budget: $${parseFloat(response.budget).toFixed(2)}`;
+  
+  }catch (error) {
+    console.error("Error retrieving budget:", error);
+    alert("Failed to retrieve the budget. Please check the console for more details.");
+  }
+}
 
+const getMonthlySpending = async () => {
+    const response = await callMyServer("/server/users/getMonthlySpending");
+    document.querySelector("#monthlySpendingDisplay").textContent = `My Spending this Month: $${parseFloat(response.total_spending).toFixed(2)}`;
+}
+
+const todaySpendingSummary = async () => {
+  const response = await callMyServer("/server/users/todaySpendingSummary");
+  document.querySelector("#todaySpendingSummary").textContent = 
+  `My Spending Today: $${parseFloat(response.today_spending).toFixed(2)}`;
+}
+
+const weekSpendingSummary = async () => {
+  const response = await callMyServer("/server/users/weekSpendingSummary");
+  document.querySelector("#weekSpendingSummary").textContent = 
+  `My Spending this Week: $${parseFloat(response.week_spending).toFixed(2)}`;
+}
+
+const monthSpendingSummary = async () => {
+  const response = await callMyServer("/server/users/monthSpendingSummary");
+  document.querySelector("#monthSpendingSummary").textContent = 
+  `My Spending this Month: $${parseFloat(response.month_spending).toFixed(2)}`;
+}
+
+const yearSpendingSummary = async () => {
+  const response = await callMyServer("/server/users/yearSpendingSummary");
+  document.querySelector("#yearSpendingSummary").textContent = 
+  `My Spending this Year: $${parseFloat(response.year_spending).toFixed(2)}`;
+}
+
+const showBudgetOptions = async () => {
+  document.querySelector("#budgetOptions").style.display = 'block';
+  console.log("showBudgetOptions reached");
+  getBudget();
+  getMonthlySpending();
+  highestSpendingDisplay();
+}
+
+//document.getElementById('budgetOptionsButton').addEventListener('click', showBudgetOptions);
+
+document.getElementById('spendingSummaries').addEventListener('click', function() {
+  todaySpendingSummary();
+  weekSpendingSummary();
+  monthSpendingSummary();
+  yearSpendingSummary();
+});
+
+
+const highestSpendingDisplay = async () => {
+    const response = await callMyServer("/server/users/highestSpendingDisplay");
+    console.log("Response is " + response.total_spending);
+    document.querySelector("#highestSpendingDisplay").textContent = `Highest Spending Month: ${response.month} with $${parseFloat(response.total_spending).toFixed(2)}`;
+}
 
 const applyFilters = async () => {
   console.log("applyFilter reached");
@@ -174,11 +237,6 @@ const updateStarStatus = async (transactionId, isStarred) => {
   });
 }
 
-
-
-
-
-
 //IMPLEMENT THIS
 const hideTransactions = () => {
   document.querySelector("#transactionTable").innerHTML = "";
@@ -195,6 +253,7 @@ const selectorsAndFunctions = {
   "#generateWebhook": generateWebhook,
   "#deactivateBank": deactivateBank,
   "#applyFilters": applyFilters,
+  "#budgetOptionsButton": showBudgetOptions,
 };
 
 Object.entries(selectorsAndFunctions).forEach(([sel, fun]) => {
@@ -204,5 +263,5 @@ Object.entries(selectorsAndFunctions).forEach(([sel, fun]) => {
     document.querySelector(sel)?.addEventListener("click", fun);
   }
 });
-
+await highestSpendingDisplay();
 await refreshSignInStatus();
