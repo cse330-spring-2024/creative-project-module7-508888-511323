@@ -39,3 +39,5 @@ Creative Portion (5 points)
 5 - Users can "star" or favorite certain transactions and show only their starred transactions
 
 Rubric Approved by Carl Wang
+
+Plaid Documentation used: https://plaid.com/docs/transactions/add-to-app/
